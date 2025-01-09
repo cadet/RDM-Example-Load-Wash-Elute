@@ -1,1 +1,10 @@
 ./*.ipynb
+.idea
+*diskcache*
+*tmp*
+.ipynb_checkpoints
+__pycache__
+*.ipynb
+*.h5
+/output/
+/output_cached/
