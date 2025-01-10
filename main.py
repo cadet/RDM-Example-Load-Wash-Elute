@@ -119,7 +119,7 @@ def create_output(root_path: Path, output_path: Path, n_cores=1):
 
     # Filter out checkpoints
     myst_files = [file for file in myst_files
-                  if (".ipynb_checkpoints" not in file.as_posix() and "/output" not in file.as_posix())
+                  if (".ipynb_checkpoints" not in file.as_posix() or "/output" not in file.as_posix())
                   ]
 
     # Make ipynbs
