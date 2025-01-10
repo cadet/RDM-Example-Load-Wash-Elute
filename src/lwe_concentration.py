@@ -1,26 +1,29 @@
----
-jupytext:
-  formats: md:myst,ipynb,py:percent
-  text_representation:
-    extension: .md
-    format_name: myst
-    format_version: 0.13
-    jupytext_version: 1.16.6
-kernelspec:
-  display_name: Python 3 (ipykernel)
-  language: python
-  name: python3
----
+# ---
+# jupyter:
+#   jupytext:
+#     formats: md:myst,ipynb,py:percent
+#     text_representation:
+#       extension: .py
+#       format_name: percent
+#       format_version: '1.3'
+#       jupytext_version: 1.16.6
+#   kernelspec:
+#     display_name: Python 3 (ipykernel)
+#     language: python
+#     name: python3
+# ---
 
-(lwe_example_flow_rate)=
-# Flow Rate Gradients
+# %% [markdown]
+# (lwe_example_concentration)=
+# # Concentration Gradients
+#
+# ```{figure} ./figures/flow_sheet_concentration.svg
+# Flow sheet for load-wash-elute process using a single inlet.
+# ```
 
+# %%
+import numpy as np
 
-```{figure} ./figures/flow_sheet_flow_rate.svg
-Flow sheet for load-wash-elute process using a separate inlets for buffers.
-```
-
-```{code-cell} ipython3
 from CADETProcess.processModel import ComponentSystem
 from CADETProcess.processModel import StericMassAction
 from CADETProcess.processModel import Inlet, GeneralRateModel, Outlet
@@ -44,14 +47,8 @@ binding_model.steric_factor = [0.0, 11.83, 10.6, 10]
 binding_model.capacity = 1200.0
 
 # Unit Operations
-load = Inlet(component_system, name='load')
-load.c = [50, 1.0, 1.0, 1.0]
-
-wash = Inlet(component_system, name='wash')
-wash.c = [50.0, 0.0, 0.0, 0.0]
-
-elute = Inlet(component_system, name='elute')
-elute.c = [500.0, 0.0, 0.0, 0.0]
+inlet = Inlet(component_system, name='inlet')
+inlet.flow_rate = 6.683738370512285e-8
 
 column = GeneralRateModel(component_system, name='column')
 column.binding_model = binding_model
@@ -75,60 +72,38 @@ outlet = Outlet(component_system, name='outlet')
 # Flow Sheet
 flow_sheet = FlowSheet(component_system)
 
-flow_sheet.add_unit(load, feed_inlet=True)
-flow_sheet.add_unit(wash, eluent_inlet=True)
-flow_sheet.add_unit(elute, eluent_inlet=True)
+flow_sheet.add_unit(inlet)
 flow_sheet.add_unit(column)
 flow_sheet.add_unit(outlet, product_outlet=True)
 
-flow_sheet.add_connection(load, column)
-flow_sheet.add_connection(wash, column)
-flow_sheet.add_connection(elute, column)
+flow_sheet.add_connection(inlet, column)
 flow_sheet.add_connection(column, outlet)
-```
 
-```{figure} ./figures/events_flow_rate.svg
-Events of load-wash-elute process using multiple inlets and mofifying their flow rates.
-```
+# %% [markdown]
+# ```{figure} ./figures/events_concentration.svg
+# Events of load-wash-elute process using a single inlet and modifying its concentration.
+# ```
 
-```{code-cell} ipython3
+# %%
 # Process
 process = Process(flow_sheet, 'lwe')
 process.cycle_time = 2000.0
 
-load_duration = 10.0
+load_duration = 9
 t_gradient_start = 90.0
 gradient_duration = process.cycle_time - t_gradient_start
 
-Q = 6.683738370512285e-8
-gradient_slope = Q/(process.cycle_time - t_gradient_start)
+c_load = np.array([50.0, 1.0, 1.0, 1.0])
+c_wash = np.array([50.0, 0.0, 0.0, 0.0])
+c_elute = np.array([500.0, 0.0, 0.0, 0.0])
+gradient_slope = (c_elute - c_wash)/gradient_duration
+c_gradient_poly = np.array(list(zip(c_wash, gradient_slope)))
 
-process.add_event('load_on', 'flow_sheet.load.flow_rate', Q)
-process.add_event('load_off', 'flow_sheet.load.flow_rate', 0.0)
-process.add_duration('load_duration', time=load_duration)
-process.add_event_dependency('load_off', ['load_on', 'load_duration'], [1, 1])
+process.add_event('load', 'flow_sheet.inlet.c', c_load)
+process.add_event('wash', 'flow_sheet.inlet.c',  c_wash, load_duration)
+process.add_event('grad_start', 'flow_sheet.inlet.c', c_gradient_poly, t_gradient_start)
 
-process.add_event('wash_off', 'flow_sheet.wash.flow_rate', 0)
-process.add_event(
-    'elute_off', 'flow_sheet.elute.flow_rate', 0
-)
-
-process.add_event(
-    'wash_on', 'flow_sheet.wash.flow_rate', Q, time=load_duration
-)
-process.add_event_dependency('wash_on', ['load_off'])
-
-process.add_event(
-    'wash_gradient', 'flow_sheet.wash.flow_rate',
-    [Q, -gradient_slope], t_gradient_start
-    )
-process.add_event(
-    'elute_gradient', 'flow_sheet.elute.flow_rate', [0, gradient_slope]
-    )
-process.add_event_dependency('elute_gradient', ['wash_gradient'])
-```
-
-```{code-cell} ipython3
+# %%
 if __name__ == '__main__':
     from CADETProcess.simulator import Cadet
     process_simulator = Cadet()
@@ -141,4 +116,7 @@ if __name__ == '__main__':
     sec.y_label = '$c_{salt}$'
 
     simulation_results.solution.column.outlet.plot(secondary_axis=sec)
-```
+
+# %%
+
+# %%

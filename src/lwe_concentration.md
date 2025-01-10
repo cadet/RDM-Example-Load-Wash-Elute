@@ -1,6 +1,6 @@
 ---
 jupytext:
-  formats: md:myst,ipynb
+  formats: md:myst,ipynb,py:percent
   text_representation:
     extension: .md
     format_name: myst
@@ -115,6 +115,10 @@ if __name__ == '__main__':
     sec.y_label = '$c_{salt}$'
 
     simulation_results.solution.column.outlet.plot(secondary_axis=sec)
+```
+
+```{code-cell} ipython3
+
 ```
 
 ```{code-cell} ipython3

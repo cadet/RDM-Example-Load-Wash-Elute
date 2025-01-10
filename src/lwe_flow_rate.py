@@ -1,26 +1,28 @@
----
-jupytext:
-  formats: md:myst,ipynb,py:percent
-  text_representation:
-    extension: .md
-    format_name: myst
-    format_version: 0.13
-    jupytext_version: 1.16.6
-kernelspec:
-  display_name: Python 3 (ipykernel)
-  language: python
-  name: python3
----
+# ---
+# jupyter:
+#   jupytext:
+#     formats: md:myst,ipynb,py:percent
+#     text_representation:
+#       extension: .py
+#       format_name: percent
+#       format_version: '1.3'
+#       jupytext_version: 1.16.6
+#   kernelspec:
+#     display_name: Python 3 (ipykernel)
+#     language: python
+#     name: python3
+# ---
 
-(lwe_example_flow_rate)=
-# Flow Rate Gradients
+# %% [markdown]
+# (lwe_example_flow_rate)=
+# # Flow Rate Gradients
+#
+#
+# ```{figure} ./figures/flow_sheet_flow_rate.svg
+# Flow sheet for load-wash-elute process using a separate inlets for buffers.
+# ```
 
-
-```{figure} ./figures/flow_sheet_flow_rate.svg
-Flow sheet for load-wash-elute process using a separate inlets for buffers.
-```
-
-```{code-cell} ipython3
+# %%
 from CADETProcess.processModel import ComponentSystem
 from CADETProcess.processModel import StericMassAction
 from CADETProcess.processModel import Inlet, GeneralRateModel, Outlet
@@ -85,13 +87,13 @@ flow_sheet.add_connection(load, column)
 flow_sheet.add_connection(wash, column)
 flow_sheet.add_connection(elute, column)
 flow_sheet.add_connection(column, outlet)
-```
 
-```{figure} ./figures/events_flow_rate.svg
-Events of load-wash-elute process using multiple inlets and mofifying their flow rates.
-```
+# %% [markdown]
+# ```{figure} ./figures/events_flow_rate.svg
+# Events of load-wash-elute process using multiple inlets and mofifying their flow rates.
+# ```
 
-```{code-cell} ipython3
+# %%
 # Process
 process = Process(flow_sheet, 'lwe')
 process.cycle_time = 2000.0
@@ -126,9 +128,8 @@ process.add_event(
     'elute_gradient', 'flow_sheet.elute.flow_rate', [0, gradient_slope]
     )
 process.add_event_dependency('elute_gradient', ['wash_gradient'])
-```
 
-```{code-cell} ipython3
+# %%
 if __name__ == '__main__':
     from CADETProcess.simulator import Cadet
     process_simulator = Cadet()
@@ -141,4 +142,3 @@ if __name__ == '__main__':
     sec.y_label = '$c_{salt}$'
 
     simulation_results.solution.column.outlet.plot(secondary_axis=sec)
-```
