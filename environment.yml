@@ -6,5 +6,6 @@ dependencies:
   - cadet
   - pip
   - pip:
-      - cadet-process
-      - cadet-rdm
+      - cadet-process[docs]
+      - cadet-rdm[jupyter]
+      - jupyterlab-myst
