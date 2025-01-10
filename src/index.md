@@ -29,23 +29,6 @@ By gradually changing the mobile phase, the separation can be optimized to separ
 
 For example, the following shows a typical concentration profile for a linear gradient.
 
-```{code-cell} ipython3
-:tags: [remove-input]
-
-from lwe_concentration import process
-
-from CADETProcess.simulator import Cadet
-process_simulator = Cadet()
-
-simulation_results = process_simulator.simulate(process)
-
-from CADETProcess.plotting import SecondaryAxis
-sec = SecondaryAxis()
-sec.components = ['Salt']
-sec.y_label = '$c_{salt}$'
-
-_ = simulation_results.solution.column.inlet.plot(secondary_axis=sec)
-```
 
 In **CADET-Process**, gradients can be used by either changing the concentration profile of an {class}`~CADETProcess.processModel.Inlet` or by adding multiple inlets and dynamically adjusting their flow rates.
 In the following, both approaches are presented.
