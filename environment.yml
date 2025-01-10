@@ -9,3 +9,4 @@ dependencies:
       - cadet-process[docs]
       - cadet-rdm[jupyter]
       - jupyterlab-myst
+      - jupyterlab
