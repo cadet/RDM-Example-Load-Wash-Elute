@@ -1,5 +1,6 @@
 import argparse
 import os
+import shutil
 from abc import abstractmethod
 from pathlib import Path
 import subprocess
@@ -114,28 +115,24 @@ def create_output(root_path: Path, output_path: Path, n_cores=1):
     None
     """
 
+    shutil.copytree(root_path, output_path)
+
     # Find all myst files recursively
-    myst_files = list(root_path.glob("**/*.md"))
+    myst_files = list(output_path.glob("**/*.md"))
 
     # Filter out checkpoints
-    myst_files = [file for file in myst_files
-                  if (".ipynb_checkpoints" not in file.as_posix() or "/output" not in file.as_posix())
-                  ]
-
-    # Make ipynbs
-    ipynb_files = [
-        output_path / file.relative_to(root_path).as_posix().replace(".md", ".ipynb")
-        for file in myst_files
+    myst_files = [
+        file for file in myst_files
+        if (".ipynb_checkpoints" not in file.as_posix() or "/output" not in file.as_posix())
     ]
 
-    for file in ipynb_files:
-        if not Path(file).parent.exists():
-            os.makedirs(Path(file).parent, exist_ok=True)
+    # Make ipynbs
+    ipynb_files = [file.with_suffix(".ipynb") for file in myst_files]
 
     # Run jupytext for each myst file
     run_func_over_args_list(
         func=convert_myst_to_ipynb,
-        args_list=[(myst_path.as_posix(), ipynb_path) for myst_path, ipynb_path in
+        args_list=[(myst_path.as_posix(), ipynb_path.as_posix()) for myst_path, ipynb_path in
                    zip(myst_files, ipynb_files)],
         n_cores=n_cores
     )
@@ -182,7 +179,11 @@ def main(repo: ProjectRepo, options, **kwargs):
             continue
         args.__setattr__(kwarg_key, kwarg_value)
 
-    create_output(repo.path, repo.output_path, args.n_cores)
+    create_output(
+        root_path=repo.path / options.source_directory,
+        output_path=repo.output_path / options.source_directory,
+        n_cores=args.n_cores
+    )
 
 
 if __name__ == "__main__":
@@ -190,4 +191,5 @@ if __name__ == "__main__":
     options.commit_message = 'Trying out new things'
     options.debug = False
     options.push = False
+    options.source_directory = "src"
     main(options)
