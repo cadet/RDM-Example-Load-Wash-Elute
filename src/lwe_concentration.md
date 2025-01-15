@@ -103,7 +103,9 @@ process.add_event('grad_start', 'flow_sheet.inlet.c', c_gradient_poly, t_gradien
 ```
 
 ```{code-cell} ipython3
+print(__name__)
 if __name__ == '__main__':
+    print("HI")
     from CADETProcess.simulator import Cadet
     process_simulator = Cadet()
 
