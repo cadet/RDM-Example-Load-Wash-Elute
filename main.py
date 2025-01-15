@@ -114,7 +114,8 @@ def create_output(root_path: Path, output_path: Path, n_cores=1):
     -------
     None
     """
-
+    if os.path.exists(output_path):
+        shutil.rmtree(output_path)
     shutil.copytree(root_path, output_path)
 
     # Find all myst files recursively
