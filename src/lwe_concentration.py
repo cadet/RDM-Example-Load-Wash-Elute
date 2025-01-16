@@ -104,7 +104,9 @@ process.add_event('wash', 'flow_sheet.inlet.c',  c_wash, load_duration)
 process.add_event('grad_start', 'flow_sheet.inlet.c', c_gradient_poly, t_gradient_start)
 
 # %%
+print(__name__)
 if __name__ == '__main__':
+    print("HI")
     from CADETProcess.simulator import Cadet
     process_simulator = Cadet()
 

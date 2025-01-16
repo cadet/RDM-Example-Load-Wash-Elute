@@ -95,6 +95,7 @@ def run_command(command):
     -------
     None
     """
+    print(command)
     return subprocess.run(command, shell=True, check=True)
 
 
@@ -124,7 +125,7 @@ def create_output(root_path: Path, output_path: Path, n_cores=1):
     # Filter out checkpoints
     myst_files = [
         file for file in myst_files
-        if (".ipynb_checkpoints" not in file.as_posix() or "/output" not in file.as_posix())
+        if (".ipynb_checkpoints" not in file.as_posix())
     ]
 
     # Make ipynbs
@@ -180,6 +181,9 @@ def main(repo: ProjectRepo, options, **kwargs):
             continue
         args.__setattr__(kwarg_key, kwarg_value)
 
+    if args.n_cores is None:
+        args.n_cores = 1
+
     create_output(
         root_path=repo.path / options.source_directory,
         output_path=repo.output_path / options.source_directory,
@@ -190,7 +194,7 @@ def main(repo: ProjectRepo, options, **kwargs):
 if __name__ == "__main__":
     options = Options()
     options.commit_message = 'Trying out new things'
-    options.debug = False
+    options.debug = True
     options.push = False
     options.source_directory = "src"
     main(options)
