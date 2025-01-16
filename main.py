@@ -194,7 +194,7 @@ def main(repo: ProjectRepo, options, **kwargs):
 if __name__ == "__main__":
     options = Options()
     options.commit_message = 'Trying out new things'
-    options.debug = True
+    options.debug = False
     options.push = False
     options.source_directory = "src"
     main(options)
