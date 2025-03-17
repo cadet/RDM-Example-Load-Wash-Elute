@@ -6,7 +6,7 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.16.7
+#       jupytext_version: 1.16.6
 #   kernelspec:
 #     display_name: Python 3 (ipykernel)
 #     language: python
@@ -96,8 +96,13 @@ gradient_duration = process.cycle_time - t_gradient_start
 c_load = np.array([50.0, 1.0, 1.0, 1.0])
 c_wash = np.array([50.0, 0.0, 0.0, 0.0])
 c_elute = np.array([500.0, 0.0, 0.0, 0.0])
-gradient_slope = (c_elute - c_wash)/gradient_duration
-c_gradient_poly = np.array(list(zip(c_wash, gradient_slope)))
+salt_gradient_slope = (c_elute[0] - c_wash[0])/gradient_duration
+c_gradient_poly =  [
+    [c_wash[0], salt_gradient_slope, 0, 0],
+    [0, 0, 0, 0],
+    [0, 0, 0, 0],
+    [0, 0, 0, 0],
+]
 
 process.add_event('load', 'flow_sheet.inlet.c', c_load)
 process.add_event('wash', 'flow_sheet.inlet.c',  c_wash, load_duration)
