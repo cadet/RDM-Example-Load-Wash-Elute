@@ -10,4 +10,4 @@ Please update the environment.yml with your python environment requirements.
 
 
 The output repository can be found at:
-[output_repo](https://github.com/ronald-jaepel/CADET-Examples_example_1_output)
+[output_repo](https://github.com/cadet/RDM-Example-Load-Wash-Elute-Output)
